@@ -1,6 +1,7 @@
 package ca.verworn.ponceau.steel;
 
-import ca.verworn.ponceau.steel.scene.MainMenu;
+import ca.verworn.ponceau.steel.scenes.MainMenu;
+import ca.verworn.ponceau.steel.scenes.MapScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -18,7 +19,7 @@ public class PonceauSteel extends Game {
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
-        setScreen(new MainMenu(this));
+        setScreen(new MapScreen(this));
     }
 
     @Override

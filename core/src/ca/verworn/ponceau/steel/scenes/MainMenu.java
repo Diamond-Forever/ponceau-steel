@@ -1,4 +1,4 @@
-package ca.verworn.ponceau.steel.scene;
+package ca.verworn.ponceau.steel.scenes;
 
 import ca.verworn.ponceau.steel.PonceauSteel;
 import com.badlogic.gdx.Gdx;
@@ -41,7 +41,7 @@ public class MainMenu implements Screen{
         game.batch.end();
 
         if (Gdx.input.isTouched()) {
-            game.setScreen(new GameScreen(game));
+            game.setScreen(new MapScreen(game));
             dispose();
         }
     }
