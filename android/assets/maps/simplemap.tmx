@@ -7,13 +7,16 @@
   </data>
  </layer>
  <layer name="Walls" width="100" height="100">
+  <properties>
+   <property name="blocking" value="true"/>
+  </properties>
   <data encoding="base64" compression="zlib">
    eJzt2duOgjAQAFDf9v//eGM2m1WC21J6mbbnJCRGAeciqQOPBwAAAAAAAAAAAADc91Vho44atdSb+mrVU2/ua1U7vbmuV630JW1EffTls5E10Zd3UWoRJY7RItVg956k8h8x8+3ak9K8e9Vqt57k5nvsW04fa86TO7hS07P9Ph17dsydmu7Sk5wcU+vK2XtX3s+lH+l9rlwzv5+V1nX1ayQ3v5r9yPk8deyqPSldx1PnaNmPGsdHdSWvT2t6yTqhH+dKZ46cmbDVmv56ntX0mq9bzPT6EcuK6/rs+cwe/9Hs+cwe/9Hs+cwe/9Hs+cwe/1GUZ7PR7/f30jOfVP2vxuL/Vfpc/221Y1mtF09X7l+9vq4955Ucv3s/as/XJXG87r9zP0r3zz1nhDgiiPCfxrXxZ8Rzurvrzqq9eOr17HTkuj+bGs+GcrYaVu/F0yy/uVnirCF6rtHjayFqzlHj6iFa7tHiGaHlHF4SBz9G1SPK7yGi1veten/PSmrMFa3nk93lzoLqDgAAAAAAAAAAAACwnm8iMQh0
   </data>
  </layer>
  <layer name="POI" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJzt1DEKACAMBMFg5f9fbCsS61OYgfSBJakCAAAAAAAAAAAAAAAAAAAAAAAAAH410gsAAAAAAAAAAAAAAAAAAABAyLwMeXq8Y++gR9Z5E3rkdP9JDwA6C7hKAJM=
+   eJzt1DEKACEMRUHZys7733ZbEbX9KjOQPvBISgEAAAAAAAAAAAAAAAAAAAAAAAAAbvWlFwAAAACAh7X0AgAAAAAAAAAAAADAVl0MeXqco++gR9Z4E3rkzP6THgDM/AaeAKI=
   </data>
  </layer>
 </map>

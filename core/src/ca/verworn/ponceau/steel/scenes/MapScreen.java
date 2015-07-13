@@ -3,6 +3,7 @@ package ca.verworn.ponceau.steel.scenes;
 
 import ca.verworn.ponceau.steel.PonceauSteel;
 import ca.verworn.ponceau.steel.entities.Player;
+import ca.verworn.ponceau.steel.handlers.Box2DHelper;
 import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -51,7 +52,9 @@ public class MapScreen implements Screen{
         debug = new Box2DDebugRenderer();
         debugCam = new OrthographicCamera();
         
-        player = new Player(new Sprite(new Texture("droplet.png")), world);
+        player = new Player(new Sprite(new Texture("player.png")), world);
+        
+        Box2DHelper.parseMapBodies(map, world);
     }
 
     @Override
