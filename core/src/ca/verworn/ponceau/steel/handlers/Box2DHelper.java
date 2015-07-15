@@ -39,8 +39,8 @@ public class Box2DHelper {
         MapLayers layers = map.getLayers();
         MapProperties properties = map.getProperties();
         System.out.println(properties.get("Tile Size"));
-        Integer pixWidth = 16, // properties.get("Tile Size", MapProperties.class).get("Width", 32 ,Integer.class), 
-                pixHeight = pixWidth;
+        Integer pixWidth = properties.get("tilewidth", Integer.class),
+                pixHeight = properties.get("tileheight", Integer.class);
         for(MapLayer layer : layers) {
             Iterator<String> i = layer.getProperties().getKeys();
             while(i.hasNext()) {
