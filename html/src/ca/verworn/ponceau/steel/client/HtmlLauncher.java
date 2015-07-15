@@ -3,7 +3,7 @@ package ca.verworn.ponceau.steel.client;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import ca.verworn.ponceau.steel.Game;
+import ca.verworn.ponceau.steel.PonceauSteel;
 
 public class HtmlLauncher extends GwtApplication {
 
@@ -14,6 +14,6 @@ public class HtmlLauncher extends GwtApplication {
 
         @Override
         public ApplicationListener getApplicationListener () {
-                return new Game();
+                return new PonceauSteel();
         }
 }

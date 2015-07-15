@@ -61,6 +61,7 @@ public class Player extends Sprite {
             velocity.add(1,  0);
         }
         
+        // Force = Mass * Acceleration
         body.applyLinearImpulse(velocity.scl(body.getMass() * ACCELERATION), body.getWorldCenter(), true);
         // update sprite texture to physics sim
         setX(body.getPosition().x * PPM);
