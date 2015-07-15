@@ -16,16 +16,19 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
-
 import ca.verworn.ponceau.steel.graphics.PonceauCamera;
 import ca.verworn.ponceau.steel.util.MathUtil;
+import ca.verworn.ponceau.steel.net.Service;
+import ca.verworn.ponceau.steel.net.ServiceAnnotation.Key;
+import ca.verworn.ponceau.steel.net.ServiceAnnotation.Subscribe;
+import java.util.UUID;
 
 import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
 
 /**
  * @author Evan Verworn <evan@verworn.ca>
  */
-public class Player extends Sprite implements Entity {
+public class Player extends Sprite implements Entity, Service {
 
     public Vector2 velocity = new Vector2(0, 0);
     public Vector2 direction = new Vector2(0, 0);
@@ -34,7 +37,9 @@ public class Player extends Sprite implements Entity {
     private final Body body;
     private final float radius;
     private Vector2 origin;
-
+    
+    @Key public final UUID Key = UUID.randomUUID();
+    
     public static Player create(World world) {
         // We define the body first because the player needs a reference to it, even though a lot of the body
         // definition stuff requires access to the players size.
@@ -68,6 +73,11 @@ public class Player extends Sprite implements Entity {
     @Override
     public EntityType getType() {
         return EntityType.PLAYER;
+    }
+    
+    @Subscribe(endpoint="Position")
+    public void receivePosition(Vector2 position) {
+      body.setTransform(position, body.getAngle());
     }
 
     @Override
