@@ -36,14 +36,17 @@ public class Bullet {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circleShape;
+        // bullets probably shouldn't slow you down
+        fixtureDef.density = 0.1f;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         mBody = world.createBody(bodyDef);
         mBody.createFixture(fixtureDef);
 
-        // I have no idea what this is, I just copied Player!
-        mBody.setLinearDamping(15f);
+        // add "air" friction
+        mBody.setLinearDamping(5f);
+        mBody.setAngularDamping(5f);
     }
 
     public void draw(Batch batch) {
