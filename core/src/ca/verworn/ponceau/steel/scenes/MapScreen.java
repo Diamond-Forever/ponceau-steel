@@ -14,6 +14,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -21,6 +22,7 @@ import ca.verworn.ponceau.steel.PonceauSteel;
 import ca.verworn.ponceau.steel.entities.Player;
 import ca.verworn.ponceau.steel.handlers.Box2DHelper;
 
+import static ca.verworn.ponceau.steel.handlers.Box2DHelper.MPP;
 import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
 
 /**
@@ -136,6 +138,14 @@ public class MapScreen implements Screen{
         @Override
         public boolean keyDown(int keycode) {
             return player.keyDown(keycode);
+        }
+
+        @Override
+        public boolean touchDown (int screenX, int screenY, int pointer, int button) {
+            // We can be more efficient here by handling our own unproject, scaling properly, and returning a Vector2
+            // instead. This is just a quick hack to get it working for now :)
+            Vector3 worldClick3 = camera.unproject(new Vector3(screenX, screenY, 0f));
+            return player.touchDown(world, new Vector2(worldClick3.x, worldClick3.y).scl(MPP));
         }
     };
 }

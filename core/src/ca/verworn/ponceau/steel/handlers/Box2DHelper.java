@@ -1,16 +1,18 @@
 
 package ca.verworn.ponceau.steel.handlers;
 
-import com.badlogic.gdx.maps.*;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapLayers;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+
 import java.util.Iterator;
 
 /**
@@ -19,10 +21,15 @@ import java.util.Iterator;
  */
 public class Box2DHelper {
     /**
-     * Pixels per Meter
+     * Pixels per Meter.
      */
     public static final float PPM = 100f;
-    
+
+    /**
+     * Meters per pixel.
+     */
+    public static final float MPP = 1 / PPM;
+
     /**
      * Parse the map for blocking tiles.
      * Look at each layer of the map to see if it has a "blocking" property, if
