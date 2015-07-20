@@ -76,6 +76,9 @@ public class MapScreen implements Screen{
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        // update physics
+        world.step(delta, 5, 2);
+        
         // render map
         renderer.setView(camera);
         renderer.render();
@@ -84,9 +87,6 @@ public class MapScreen implements Screen{
         renderer.getBatch().begin();
         player.draw(renderer.getBatch());
         renderer.getBatch().end();
-
-        // update physics
-        world.step(delta, 5, 2);
 
         debugCam.position.set(camera.position.scl(1f/PPM));
         debugCam.update();

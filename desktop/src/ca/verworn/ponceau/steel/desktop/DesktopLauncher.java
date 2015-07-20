@@ -11,6 +11,7 @@ public class DesktopLauncher {
                 config.height = 400;
                 config.title = "Ponceau Steel";
                 config.vSyncEnabled = true;
+                config.allowSoftwareMode = true;
 		new LwjglApplication(new PonceauSteel(), config);
 	}
 }
