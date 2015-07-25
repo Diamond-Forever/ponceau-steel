@@ -17,22 +17,21 @@ import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
  * putting gunpowder in these??
  */
 public class Bullet {
+    private static final float INITIAL_VELOCITY_METERS_PER_SECOND = 9.0f;
+
     // Really this should live outside of Bullet, as it should be cleaned up when the application is closing.
     private static Sprite mBulletSprite;
 
     private final Body mBody;
-    private final Vector2 mDirection;
 
     public Bullet(World world, Vector2 origin, Vector2 direction) {
         if (mBulletSprite == null) {
             mBulletSprite = new Sprite(new Texture("bullet.png"));
         }
 
-        mDirection = direction.cpy();
-
         CircleShape circleShape = new CircleShape();
         circleShape.setRadius(mBulletSprite.getWidth() / 2 / PPM);
-        circleShape.setPosition(origin.cpy().add(direction.cpy().scl(1f)));
+        circleShape.setPosition(origin.cpy().add(direction.cpy().scl(0.38f)));
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circleShape;
@@ -45,11 +44,18 @@ public class Bullet {
         mBody.createFixture(fixtureDef);
 
         // add "air" friction
-        mBody.setLinearDamping(5f);
-        mBody.setAngularDamping(5f);
+        mBody.setLinearDamping(0.2f);
+        mBody.setAngularDamping(0.2f);
+
+        mBody.applyLinearImpulse(direction.cpy().scl(mBody.getMass() * INITIAL_VELOCITY_METERS_PER_SECOND),
+                mBody.getWorldCenter(), true);
     }
 
     public void draw(Batch batch) {
         mBulletSprite.draw(batch);
+    }
+
+    private void update(float timeDelta) {
+
     }
 }
