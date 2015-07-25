@@ -6,10 +6,19 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
+/**
+ * Listens for contacts between fixtures. For now just logs the the body user data of the fixtures that collide.
+ */
 public class BulletContactListener implements ContactListener {
 
     public enum BodyContactType {
-        BULLET, WALL, PLAYER
+        BULLET, WALL, PLAYER;
+
+        public final short maskBit;
+
+        BodyContactType() {
+            maskBit = (short) (1 << ordinal());
+        }
     }
 
     @Override

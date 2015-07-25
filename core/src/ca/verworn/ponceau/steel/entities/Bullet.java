@@ -15,8 +15,7 @@ import ca.verworn.ponceau.steel.handlers.BulletContactListener.BodyContactType;
 import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
 
 /**
- * Create a bullet to cause harm to your enemies. Currently bullets just fall on the ground and get in the way, are you
- * putting gunpowder in these??
+ * Create a bullet to cause harm to your enemies. Bullets will not collide with each other, and slow down very slowly.
  */
 public class Bullet {
     private static final float INITIAL_VELOCITY_METERS_PER_SECOND = 9.0f;
@@ -39,9 +38,13 @@ public class Bullet {
         fixtureDef.shape = circleShape;
         // bullets probably shouldn't slow you down
         fixtureDef.density = 0.1f;
+        fixtureDef.filter.categoryBits = BodyContactType.BULLET.maskBit;
+        fixtureDef.filter.maskBits = (short) (BodyContactType.PLAYER.maskBit | BodyContactType.WALL.maskBit);
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.bullet = true;
+
         mBody = world.createBody(bodyDef);
         mBody.createFixture(fixtureDef);
         mBody.setUserData(BodyContactType.BULLET);

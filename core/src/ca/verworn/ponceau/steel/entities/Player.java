@@ -41,6 +41,8 @@ public class Player extends Sprite {
         shape.setPosition(new Vector2((getX() + (getWidth() / 2)) / PPM, (getY() + (getHeight() / 2)) / PPM));
         FixtureDef fdef = new FixtureDef();
         fdef.shape = shape;
+        fdef.filter.categoryBits = BodyContactType.PLAYER.maskBit;
+        fdef.filter.maskBits = (short) (BodyContactType.WALL.maskBit | BodyContactType.BULLET.maskBit);
 
         // Box2D Init
         body = world.createBody(def);

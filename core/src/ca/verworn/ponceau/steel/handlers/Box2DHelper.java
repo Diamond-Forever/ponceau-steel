@@ -72,7 +72,11 @@ public class Box2DHelper {
                         TiledMapTile tile = cell.getTile();
                         shape.setAsBox(pixWidth / 2 / PPM, pixHeight / 2 / PPM);
                         bdef.position.set((x * pixWidth + 8) / PPM, (y * pixHeight + 8) / PPM);
+
                         fdef.shape = shape;
+                        fdef.filter.categoryBits = BodyContactType.WALL.maskBit;
+                        fdef.filter.maskBits = (short) (BodyContactType.PLAYER.maskBit | BodyContactType.BULLET.maskBit);
+
                         Body body = world.createBody(bdef);
                         body.createFixture(fdef);
                         body.setUserData(BodyContactType.WALL);
