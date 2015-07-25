@@ -8,12 +8,15 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.Iterator;
+
+import ca.verworn.ponceau.steel.handlers.BulletContactListener.BodyContactType;
 
 /**
  *
@@ -70,7 +73,9 @@ public class Box2DHelper {
                         shape.setAsBox(pixWidth / 2 / PPM, pixHeight / 2 / PPM);
                         bdef.position.set((x * pixWidth + 8) / PPM, (y * pixHeight + 8) / PPM);
                         fdef.shape = shape;
-                        world.createBody(bdef).createFixture(fdef);
+                        Body body = world.createBody(bdef);
+                        body.createFixture(fdef);
+                        body.setUserData(BodyContactType.WALL);
                     }
                 }
             }

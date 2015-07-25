@@ -10,6 +10,8 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
+import ca.verworn.ponceau.steel.handlers.BulletContactListener.BodyContactType;
+
 import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
 
 /**
@@ -42,6 +44,7 @@ public class Bullet {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         mBody = world.createBody(bodyDef);
         mBody.createFixture(fixtureDef);
+        mBody.setUserData(BodyContactType.BULLET);
 
         // add "air" friction
         mBody.setLinearDamping(0.2f);

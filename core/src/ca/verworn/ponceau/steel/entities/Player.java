@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
+import ca.verworn.ponceau.steel.handlers.BulletContactListener.BodyContactType;
 import ca.verworn.ponceau.steel.util.MathUtil;
 
 import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
@@ -43,6 +44,7 @@ public class Player extends Sprite {
 
         // Box2D Init
         body = world.createBody(def);
+        body.setUserData(BodyContactType.PLAYER);
         body.createFixture(fdef);
         body.setLinearDamping(15f);
     }
