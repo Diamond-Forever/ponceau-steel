@@ -14,8 +14,12 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import ca.verworn.ponceau.steel.PonceauSteel;
 import ca.verworn.ponceau.steel.entities.Player;
@@ -37,6 +41,7 @@ public class MapScreen implements Screen{
     private OrthographicCamera camera;
 
     private final PonceauSteel game;
+    private final List<Body> mDestroyedBodies = new LinkedList<>();
     private Player player;
     private World world;
 
@@ -56,7 +61,7 @@ public class MapScreen implements Screen{
         camera = new OrthographicCamera();
 
         world = new World(new Vector2(0,0), true); // box2D
-        world.setContactListener(new BulletContactListener());
+        world.setContactListener(new BulletContactListener(mDestroyedBodies));
         debug = new Box2DDebugRenderer();
         debugCam = new OrthographicCamera();
 
@@ -79,6 +84,11 @@ public class MapScreen implements Screen{
 
         // update physics
         world.step(delta, 5, 2);
+
+        for (Body destroyedBody : mDestroyedBodies) {
+            world.destroyBody(destroyedBody);
+        }
+        mDestroyedBodies.clear();
         
         // render map
         renderer.setView(camera);

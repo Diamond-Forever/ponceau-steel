@@ -38,6 +38,7 @@ public class Bullet {
         fixtureDef.shape = circleShape;
         // bullets probably shouldn't slow you down
         fixtureDef.density = 0.1f;
+        fixtureDef.restitution = 0.1f;
         fixtureDef.filter.categoryBits = BodyContactType.BULLET.maskBit;
         fixtureDef.filter.maskBits = (short) (BodyContactType.PLAYER.maskBit | BodyContactType.WALL.maskBit);
 
