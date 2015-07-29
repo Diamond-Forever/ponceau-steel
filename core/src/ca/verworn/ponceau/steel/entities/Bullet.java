@@ -36,7 +36,8 @@ public class Bullet implements Entity {
         fixtureDef.density = 0.1f;
         fixtureDef.restitution = 0.1f;
         fixtureDef.filter.categoryBits = EntityType.BULLET.maskBit;
-        fixtureDef.filter.maskBits = (short) (EntityType.PLAYER.maskBit | EntityType.WALL.maskBit);
+        fixtureDef.filter.maskBits = (short) (EntityType.PLAYER.maskBit | EntityType.WALL.maskBit
+                | EntityType.ENEMY.maskBit);
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;

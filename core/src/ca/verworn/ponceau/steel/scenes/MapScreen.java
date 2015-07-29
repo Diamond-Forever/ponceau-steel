@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ca.verworn.ponceau.steel.PonceauSteel;
+import ca.verworn.ponceau.steel.entities.Enemy;
 import ca.verworn.ponceau.steel.entities.Player;
 import ca.verworn.ponceau.steel.handlers.Box2DHelper;
 import ca.verworn.ponceau.steel.handlers.BulletContactListener;
@@ -65,6 +66,9 @@ public class MapScreen implements Screen {
         debugCam = new OrthographicCamera();
 
         player = Player.create(world);
+
+        Enemy.create(world, new Vector2(2f, 3f));
+        Enemy.create(world, new Vector2(3f, 2f));
 
         Box2DHelper.parseMapBodies(map, world);
 

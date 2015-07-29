@@ -47,7 +47,7 @@ public class Player extends Sprite implements Entity {
         FixtureDef fdef = new FixtureDef();
         fdef.shape = shape;
         fdef.filter.categoryBits = EntityType.PLAYER.maskBit;
-        fdef.filter.maskBits = (short) (EntityType.WALL.maskBit | EntityType.BULLET.maskBit);
+        fdef.filter.maskBits = (short) (EntityType.WALL.maskBit | EntityType.BULLET.maskBit | EntityType.ENEMY.maskBit);
 
         body.setUserData(player);
         body.createFixture(fdef);
