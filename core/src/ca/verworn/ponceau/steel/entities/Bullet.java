@@ -10,22 +10,18 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
-import ca.verworn.ponceau.steel.handlers.BulletContactListener.BodyContactType;
-
 import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
 
 /**
  * Create a bullet to cause harm to your enemies. Bullets will not collide with each other, and slow down very slowly.
  */
-public class Bullet {
-    private static final float INITIAL_VELOCITY_METERS_PER_SECOND = 9.0f;
+public class Bullet implements Entity {
+    private static final float INITIAL_VELOCITY_METERS_PER_SECOND = 3.0f;
 
     // Really this should live outside of Bullet, as it should be cleaned up when the application is closing.
     private static Sprite mBulletSprite;
 
-    private final Body mBody;
-
-    public Bullet(World world, Vector2 origin, Vector2 direction) {
+    public static void create(World world, Vector2 origin, Vector2 direction) {
         if (mBulletSprite == null) {
             mBulletSprite = new Sprite(new Texture("bullet.png"));
         }
@@ -39,30 +35,31 @@ public class Bullet {
         // bullets probably shouldn't slow you down
         fixtureDef.density = 0.1f;
         fixtureDef.restitution = 0.1f;
-        fixtureDef.filter.categoryBits = BodyContactType.BULLET.maskBit;
-        fixtureDef.filter.maskBits = (short) (BodyContactType.PLAYER.maskBit | BodyContactType.WALL.maskBit);
+        fixtureDef.filter.categoryBits = EntityType.BULLET.maskBit;
+        fixtureDef.filter.maskBits = (short) (EntityType.PLAYER.maskBit | EntityType.WALL.maskBit);
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.bullet = true;
 
-        mBody = world.createBody(bodyDef);
-        mBody.createFixture(fixtureDef);
-        mBody.setUserData(BodyContactType.BULLET);
+        Body body = world.createBody(bodyDef);
+        body.createFixture(fixtureDef);
+        body.setUserData(new Bullet());
 
         // add "air" friction
-        mBody.setLinearDamping(0.2f);
-        mBody.setAngularDamping(0.2f);
+        body.setLinearDamping(0.2f);
+        body.setAngularDamping(0.2f);
 
-        mBody.applyLinearImpulse(direction.cpy().scl(mBody.getMass() * INITIAL_VELOCITY_METERS_PER_SECOND),
-                mBody.getWorldCenter(), true);
+        body.applyLinearImpulse(direction.cpy().scl(body.getMass() * INITIAL_VELOCITY_METERS_PER_SECOND), body
+                .getWorldCenter(), true);
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.BULLET;
     }
 
     public void draw(Batch batch) {
         mBulletSprite.draw(batch);
-    }
-
-    private void update(float timeDelta) {
-
     }
 }

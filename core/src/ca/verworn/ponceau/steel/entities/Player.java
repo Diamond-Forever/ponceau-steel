@@ -2,6 +2,7 @@ package ca.verworn.ponceau.steel.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
@@ -12,7 +13,6 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
-import ca.verworn.ponceau.steel.handlers.BulletContactListener.BodyContactType;
 import ca.verworn.ponceau.steel.util.MathUtil;
 
 import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
@@ -20,7 +20,7 @@ import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
 /**
  * @author Evan Verworn <evan@verworn.ca>
  */
-public class Player extends Sprite {
+public class Player extends Sprite implements Entity {
 
     public Vector2 velocity = new Vector2(0, 0);
     public Vector2 direction = new Vector2(0, 0);
@@ -29,26 +29,42 @@ public class Player extends Sprite {
     private final Body body;
     private final float radius;
 
-    public Player(Sprite sprite, World world) {
-        super(sprite);
-        radius = getWidth() / 2 / PPM;
-
-        // Box2D Definitions
+    public static Player create(World world) {
+        // We define the body first because the player needs a reference to it, even though a lot of the body
+        // definition stuff requires access to the players size.
         BodyDef def = new BodyDef();
         def.type = BodyType.DynamicBody;
+        Body body = world.createBody(def);
+
+        Player player = new Player(new Sprite(new Texture("player.png")), body);
+
         CircleShape shape = new CircleShape();
-        shape.setRadius(radius);
-        shape.setPosition(new Vector2((getX() + (getWidth() / 2)) / PPM, (getY() + (getHeight() / 2)) / PPM));
+        shape.setRadius(player.radius);
+        shape.setPosition(new Vector2(
+                (player.getX() + (player.getWidth() / 2)) / PPM,
+                (player.getY() + (player.getHeight() / 2)) / PPM));
+
         FixtureDef fdef = new FixtureDef();
         fdef.shape = shape;
-        fdef.filter.categoryBits = BodyContactType.PLAYER.maskBit;
-        fdef.filter.maskBits = (short) (BodyContactType.WALL.maskBit | BodyContactType.BULLET.maskBit);
+        fdef.filter.categoryBits = EntityType.PLAYER.maskBit;
+        fdef.filter.maskBits = (short) (EntityType.WALL.maskBit | EntityType.BULLET.maskBit);
 
-        // Box2D Init
-        body = world.createBody(def);
-        body.setUserData(BodyContactType.PLAYER);
+        body.setUserData(player);
         body.createFixture(fdef);
         body.setLinearDamping(15f);
+
+        return player;
+    }
+
+    public Player(Sprite sprite, Body body) {
+        super(sprite);
+        radius = getWidth() / 2 / PPM;
+        this.body = body;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.PLAYER;
     }
 
     @Override
@@ -95,7 +111,7 @@ public class Player extends Sprite {
 
     public boolean touchDown(World world, Vector2 worldClickPosition) {
         Vector2 origin = body.getPosition().cpy().add(radius, radius);
-        new Bullet(world, origin, MathUtil.getNormalDirectionVector(origin, worldClickPosition));
+        Bullet.create(world, origin, MathUtil.getNormalDirectionVector(origin, worldClickPosition));
         return true;
     }
 

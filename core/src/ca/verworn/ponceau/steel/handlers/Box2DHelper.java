@@ -16,10 +16,10 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.Iterator;
 
-import ca.verworn.ponceau.steel.handlers.BulletContactListener.BodyContactType;
+import ca.verworn.ponceau.steel.entities.Entity.EntityType;
+import ca.verworn.ponceau.steel.entities.Wall;
 
 /**
- *
  * @author Evan Verworn <evan@verworn.ca>
  */
 public class Box2DHelper {
@@ -74,12 +74,12 @@ public class Box2DHelper {
                         bdef.position.set((x * pixWidth + 8) / PPM, (y * pixHeight + 8) / PPM);
 
                         fdef.shape = shape;
-                        fdef.filter.categoryBits = BodyContactType.WALL.maskBit;
-                        fdef.filter.maskBits = (short) (BodyContactType.PLAYER.maskBit | BodyContactType.BULLET.maskBit);
+                        fdef.filter.categoryBits = EntityType.WALL.maskBit;
+                        fdef.filter.maskBits = (short) (EntityType.PLAYER.maskBit | EntityType.BULLET.maskBit);
 
                         Body body = world.createBody(bdef);
                         body.createFixture(fdef);
-                        body.setUserData(BodyContactType.WALL);
+                        body.setUserData(new Wall());
                     }
                 }
             }

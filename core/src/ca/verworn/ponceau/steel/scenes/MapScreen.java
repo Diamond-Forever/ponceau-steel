@@ -7,8 +7,6 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -18,8 +16,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import ca.verworn.ponceau.steel.PonceauSteel;
 import ca.verworn.ponceau.steel.entities.Player;
@@ -30,18 +28,19 @@ import static ca.verworn.ponceau.steel.handlers.Box2DHelper.MPP;
 import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
 
 /**
- * This class is an example of loading a map, with a player,
- * with collision (coming soon).
+ * This class is an example of loading a map, with a player. The player can collide into walls, shoot bullets, and those
+ * bullets can collide with the player or the walls.
+ *
  * @author Evan Verworn <evan@verworn.ca>
  */
-public class MapScreen implements Screen{
+public class MapScreen implements Screen {
 
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera camera;
 
     private final PonceauSteel game;
-    private final List<Body> mDestroyedBodies = new LinkedList<>();
+    private final Set<Body> mDestroyedBodies = new HashSet<>();
     private Player player;
     private World world;
 
@@ -60,12 +59,12 @@ public class MapScreen implements Screen{
         renderer = new OrthogonalTiledMapRenderer(map);
         camera = new OrthographicCamera();
 
-        world = new World(new Vector2(0,0), true); // box2D
+        world = new World(new Vector2(0, 0), true); // box2D
         world.setContactListener(new BulletContactListener(mDestroyedBodies));
         debug = new Box2DDebugRenderer();
         debugCam = new OrthographicCamera();
 
-        player = new Player(new Sprite(new Texture("player.png")), world);
+        player = Player.create(world);
 
         Box2DHelper.parseMapBodies(map, world);
 
@@ -75,7 +74,7 @@ public class MapScreen implements Screen{
     @Override
     public void render(float delta) {
         // follow the player
-        camera.position.set(player.getX() + player.getWidth() / 2f, player.getY() + player.getHeight()/ 2f, 0);
+        camera.position.set(player.getX() + player.getWidth() / 2f, player.getY() + player.getHeight() / 2f, 0);
         camera.update();
 
         // clear screen
@@ -89,7 +88,7 @@ public class MapScreen implements Screen{
             world.destroyBody(destroyedBody);
         }
         mDestroyedBodies.clear();
-        
+
         // render map
         renderer.setView(camera);
         renderer.render();
@@ -99,7 +98,7 @@ public class MapScreen implements Screen{
         player.draw(renderer.getBatch());
         renderer.getBatch().end();
 
-        debugCam.position.set(camera.position.scl(1f/PPM));
+        debugCam.position.set(camera.position.scl(1f / PPM));
         debugCam.update();
         debug.render(world, debugCam.combined);
     }
@@ -152,7 +151,7 @@ public class MapScreen implements Screen{
         }
 
         @Override
-        public boolean touchDown (int screenX, int screenY, int pointer, int button) {
+        public boolean touchDown(int screenX, int screenY, int pointer, int button) {
             // We can be more efficient here by handling our own unproject, scaling properly, and returning a Vector2
             // instead. This is just a quick hack to get it working for now :)
             Vector3 worldClick3 = camera.unproject(new Vector3(screenX, screenY, 0f));

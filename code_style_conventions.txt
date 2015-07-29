@@ -30,13 +30,16 @@ Coltins Proposals
  * Method parameters are considered final, don't modify them. We won't make them final because that's a lot of ugly
     boilerplate code, but let's treat them that way.
  * Non-public class variables should be prefixed "m". The idea is to make it very easy to identify when you are
-    changing a classes state (member variables), which makes it a lot easier to trace through the code.
+    changing a classes state (member variables), which makes it a lot easier to trace through the code. It also helps
+    avoid situations where you write `this.someVar = someVar`. Yuck.
  * Public member variables don't need the "m" prefix, but these should be final. Non-final member variables should
     have a getter if you want it to be accessed. Having external things modify the state makes code hard to read, and
     should be done through setters.
  * Constants be ALL_UPPER_CASE and separated by underscores. This makes them easy to identify.
  * "someHttpVariable" instead of "someHTTPVariable"
- *
+ * No author tags. They are boiler plate that doesn't really help in any way.
+ * Write a javadoc for every class/interface/enum/etc, even small subclasses should have a javadoc. Why does this
+    class, what can it be used for, etc.
 
 
 Laws
