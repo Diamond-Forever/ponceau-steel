@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 
 import java.util.Set;
 
+import ca.verworn.ponceau.steel.entities.Enemy;
 import ca.verworn.ponceau.steel.entities.Entity;
 import ca.verworn.ponceau.steel.entities.Entity.EntityType;
 
@@ -29,10 +30,10 @@ public class BulletContactListener implements ContactListener {
         EntityType entityTypeA = getEntityType(contact.getFixtureA());
         EntityType entityTypeB = getEntityType(contact.getFixtureB());
 
-        if (entityTypeA == EntityType.BULLET && entityTypeB == EntityType.WALL) {
-            processBulletHitsWall(contact.getFixtureA().getBody());
-        } else if (entityTypeB == EntityType.BULLET && entityTypeA == EntityType.WALL) {
-            processBulletHitsWall(contact.getFixtureB().getBody());
+        if (entityTypeA == EntityType.BULLET) {
+            bulletCollision(contact.getFixtureA().getBody(), contact.getFixtureB().getBody(), entityTypeB);
+        } else if (entityTypeB == EntityType.BULLET) {
+            bulletCollision(contact.getFixtureB().getBody(), contact.getFixtureA().getBody(), entityTypeA);
         } else {
             Gdx.app.log("Contact", String.format("A=%s   B=%s", entityTypeA, entityTypeB));
         }
@@ -53,9 +54,19 @@ public class BulletContactListener implements ContactListener {
         // Intentionally empty.
     }
 
-    private void processBulletHitsWall(Body bulletBody) {
-        Gdx.app.log("Contact", "bullet hits wall!");
-        mDestroyedBodies.add(bulletBody);
+    private void bulletCollision(Body bulletBody, Body otherBody, EntityType otherEntityType) {
+        Gdx.app.log("Contact", "bullet hits " + otherEntityType);
+
+        if (otherEntityType == EntityType.WALL) {
+            mDestroyedBodies.add(bulletBody);
+        } else if (otherEntityType == EntityType.ENEMY) {
+            Enemy enemy = (Enemy) otherBody.getUserData();
+            enemy.gotHit();
+            if (enemy.isDead()) {
+                mDestroyedBodies.add(otherBody);
+            }
+            mDestroyedBodies.add(bulletBody);
+        }
     }
 
     private static EntityType getEntityType(Fixture fixture) {

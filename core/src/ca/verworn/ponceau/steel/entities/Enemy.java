@@ -15,6 +15,8 @@ import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
  */
 public class Enemy implements Entity {
 
+    private int mHp = 7;
+
     /**
      * Creates an enemy at {@param origin} and add it to the world.
      */
@@ -41,5 +43,13 @@ public class Enemy implements Entity {
     @Override
     public EntityType getType() {
         return EntityType.ENEMY;
+    }
+
+    public void gotHit() {
+        mHp -= 1;
+    }
+
+    public boolean isDead() {
+        return mHp <= 0;
     }
 }
