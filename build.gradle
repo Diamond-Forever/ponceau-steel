@@ -11,7 +11,6 @@ buildscript {
 }
 
 allprojects {
-    apply plugin: "eclipse"
     apply plugin: "idea"
 
     version = '1.0'
@@ -34,7 +33,6 @@ allprojects {
 project(":desktop") {
     apply plugin: "java"
 
-
     dependencies {
         compile project(":core")
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
@@ -50,7 +48,6 @@ project(":desktop") {
 project(":html") {
     apply plugin: "gwt"
     apply plugin: "war"
-
 
     dependencies {
         compile project(":core")
@@ -70,7 +67,6 @@ project(":html") {
 
 project(":core") {
     apply plugin: "java"
-
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
@@ -108,8 +104,4 @@ project(":android") {
         compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
         compile "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
     }
-}
-
-tasks.eclipse.doLast {
-    delete ".project"
 }
