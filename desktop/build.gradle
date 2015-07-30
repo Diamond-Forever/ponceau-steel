@@ -1,5 +1,6 @@
 apply plugin: "java"
 sourceSets.main.java.srcDirs = ["src/"]
+sourceCompatibility = 1.6
 project.ext.mainClassName = "ca.verworn.ponceau.steel.desktop.DesktopLauncher"
 project.ext.assetsDir = new File("../android/assets");
 
