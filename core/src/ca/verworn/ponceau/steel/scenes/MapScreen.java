@@ -26,6 +26,7 @@ import ca.verworn.ponceau.steel.handlers.Box2DHelper;
 import ca.verworn.ponceau.steel.handlers.BulletContactListener;
 
 import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
+import static ca.verworn.ponceau.steel.handlers.Box2DHelper.MPP;
 
 /**
  * This class is an example of loading a map, with a player. The player can collide into walls, shoot bullets, and those
@@ -77,12 +78,14 @@ public class MapScreen implements Screen {
     @Override
     public void render(float delta) {
         // follow the player
-        camera.position.set(player.getX() + player.getWidth() / 2f, player.getY() + player.getHeight() / 2f, 0);
+        camera.position.set(player.getX(), player.getY(), 0);
         camera.update();
 
         // clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // TODO: Should do IO, world updates, then drawing.
 
         // update physics
         world.step(delta, 5, 2);
@@ -91,6 +94,8 @@ public class MapScreen implements Screen {
             world.destroyBody(destroyedBody);
         }
         mDestroyedBodies.clear();
+
+        player.update(camera.unproject(Gdx.input.getX(), Gdx.input.getY()));
 
         // render map
         renderer.setView(camera);
@@ -101,7 +106,9 @@ public class MapScreen implements Screen {
         player.draw(renderer.getBatch());
         renderer.getBatch().end();
 
-        debugCam.position.set(camera.position.scl(1f / PPM));
+        player.draw(game.renderer, camera);
+
+        debugCam.position.set(camera.position.scl(MPP));
         debugCam.update();
         debug.render(world, debugCam.combined);
     }

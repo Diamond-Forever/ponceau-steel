@@ -5,7 +5,11 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -13,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
+import ca.verworn.ponceau.steel.graphics.PonceauCamera;
 import ca.verworn.ponceau.steel.util.MathUtil;
 
 import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
@@ -28,6 +33,7 @@ public class Player extends Sprite implements Entity {
     private final float ACCELERATION = 0.9f;
     private final Body body;
     private final float radius;
+    private Vector2 origin;
 
     public static Player create(World world) {
         // We define the body first because the player needs a reference to it, even though a lot of the body
@@ -40,9 +46,6 @@ public class Player extends Sprite implements Entity {
 
         CircleShape shape = new CircleShape();
         shape.setRadius(player.radius);
-        shape.setPosition(new Vector2(
-                (player.getX() + (player.getWidth() / 2)) / PPM,
-                (player.getY() + (player.getHeight() / 2)) / PPM));
 
         FixtureDef fdef = new FixtureDef();
         fdef.shape = shape;
@@ -69,8 +72,37 @@ public class Player extends Sprite implements Entity {
 
     @Override
     public void draw(Batch batch) {
-        update(Gdx.graphics.getDeltaTime());
         super.draw(batch);
+    }
+
+    public void draw(ShapeRenderer renderer, PonceauCamera camera) {
+        Vector3 n = camera.project(new Vector3(getX() + radius * PPM, getY() + radius * PPM, 0f));
+        renderer.begin(ShapeType.Filled);
+        renderer.setColor(0.9f, 0.1f, 0.1f, 0.0f);
+        renderer.circle(n.x, n.y, 10f);
+        renderer.end();
+    }
+
+    public void update(Vector2 mousePosition) {
+        // Goal: Point the character towards the mouse.
+        float crossProduct = body.getPosition().cpy()
+                .add(MathUtils.cos(body.getAngle()), MathUtils.sin(body.getAngle()))
+                .crs(mousePosition);
+        if (crossProduct > 0) {
+            body.setAngularVelocity(1.5f);
+        } else if (crossProduct < 0) {
+            body.setAngularVelocity(-1.5f);
+        } else {
+            Gdx.app.log("", "nailed it");
+        }
+        Gdx.app.log("", String.format("%f %f -> %f %f", body.getPosition().x, body.getPosition().y, mousePosition.x,
+                mousePosition.y));
+
+        // Force = Mass * Acceleration
+        velocity.set(direction);
+        body.applyLinearImpulse(velocity.scl(body.getMass() * ACCELERATION), body.getWorldCenter(), true);
+        // update sprite texture to physics sim
+        setPosition((body.getPosition().x - radius) * PPM, (body.getPosition().y - radius) * PPM);
     }
 
     public boolean keyUp(int keycode) {
@@ -109,17 +141,19 @@ public class Player extends Sprite implements Entity {
         return false;
     }
 
-    public boolean touchDown(World world, Vector2 worldClickPosition) {
-        Vector2 origin = body.getPosition().cpy().add(radius, radius);
-        Bullet.create(world, origin, MathUtil.getNormalDirectionVector(origin, worldClickPosition));
+    public boolean touchDown(World world, Vector2 mousePosition) {
+        Vector2 origin = body.getPosition();
+        Bullet.create(world, origin, MathUtil.getNormalDirectionVector(origin, mousePosition));
         return true;
     }
 
-    private void update(float delta) {
-        // Force = Mass * Acceleration
-        velocity.set(direction);
-        body.applyLinearImpulse(velocity.scl(body.getMass() * ACCELERATION), body.getWorldCenter(), true);
-        // update sprite texture to physics sim
-        setPosition(body.getPosition().x * PPM, body.getPosition().y * PPM);
+    private double norm(double v) {
+        if (v < 0) {
+            return v + MathUtils.PI2;
+        } else if (v > MathUtils.PI2) {
+            return v - MathUtils.PI2;
+        } else {
+            return v;
+        }
     }
 }
