@@ -95,8 +95,9 @@ public class Player extends Sprite implements Entity {
         } else {
             Gdx.app.log("", "nailed it");
         }
-        Gdx.app.log("", String.format("%f %f -> %f %f", body.getPosition().x, body.getPosition().y, mousePosition.x,
-                mousePosition.y));
+        //        Gdx.app.log("", String.format("%f %f -> %f %f", body.getPosition().x, body.getPosition().x,
+        // mousePosition.y,
+        //                mousePosition.y));
 
         // Force = Mass * Acceleration
         velocity.set(direction);
@@ -108,16 +109,16 @@ public class Player extends Sprite implements Entity {
     public boolean keyUp(int keycode) {
         switch (keycode) {
             case Keys.W:
-                direction.set(direction.x, 0);
+                direction.add(0f, -1f);
                 return true;
             case Keys.A:
-                direction.set(0, direction.y);
+                direction.add(1f, 0f);
                 return true;
             case Keys.S:
-                direction.set(direction.x, 0);
+                direction.add(0f, 1f);
                 return true;
             case Keys.D:
-                direction.set(0, direction.y);
+                direction.add(-1f, 0f);
                 return true;
         }
         return false;
@@ -126,16 +127,16 @@ public class Player extends Sprite implements Entity {
     public boolean keyDown(int keycode) {
         switch (keycode) {
             case Keys.W:
-                direction.set(direction.x, 1);
+                direction.add(0f, 1f);
                 return true;
             case Keys.A:
-                direction.set(-1, direction.y);
+                direction.add(-1f, 0f);
                 return true;
             case Keys.S:
-                direction.set(direction.x, -1);
+                direction.add(0f, -1f);
                 return true;
             case Keys.D:
-                direction.set(1, direction.y);
+                direction.add(1f, 0f);
                 return true;
         }
         return false;
