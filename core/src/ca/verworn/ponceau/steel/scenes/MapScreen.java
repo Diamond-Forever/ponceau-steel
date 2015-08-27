@@ -1,6 +1,13 @@
-
 package ca.verworn.ponceau.steel.scenes;
 
+import ca.verworn.ponceau.steel.PonceauSteel;
+import ca.verworn.ponceau.steel.entities.Enemy;
+import ca.verworn.ponceau.steel.entities.Player;
+import ca.verworn.ponceau.steel.graphics.PonceauCamera;
+import ca.verworn.ponceau.steel.handlers.Box2DHelper;
+import static ca.verworn.ponceau.steel.handlers.Box2DHelper.MPP;
+import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
+import ca.verworn.ponceau.steel.handlers.BulletContactListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
@@ -14,19 +21,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-
 import java.util.HashSet;
 import java.util.Set;
-
-import ca.verworn.ponceau.steel.PonceauSteel;
-import ca.verworn.ponceau.steel.entities.Enemy;
-import ca.verworn.ponceau.steel.entities.Player;
-import ca.verworn.ponceau.steel.graphics.PonceauCamera;
-import ca.verworn.ponceau.steel.handlers.Box2DHelper;
-import ca.verworn.ponceau.steel.handlers.BulletContactListener;
-
-import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
-import static ca.verworn.ponceau.steel.handlers.Box2DHelper.MPP;
 
 /**
  * This class is an example of loading a map, with a player. The player can collide into walls, shoot bullets, and those

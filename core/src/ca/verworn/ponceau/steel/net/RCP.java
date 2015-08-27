@@ -3,20 +3,15 @@ package ca.verworn.ponceau.steel.net;
 import ca.verworn.ponceau.steel.net.ServiceAnnotation.Key;
 import ca.verworn.ponceau.steel.net.ServiceAnnotation.Publish;
 import ca.verworn.ponceau.steel.net.ServiceAnnotation.Subscribe;
-import static ca.verworn.ponceau.steel.util.Logger.Out;
+import static ca.verworn.ponceau.steel.util.Logger.Panda;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketAddress;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -94,13 +89,13 @@ public class RCP {
                 service = Publish(object);
                 service.isRemote = true;
             } catch (Exception e) {
-                Out(e.getLocalizedMessage());
+                Panda(e.getLocalizedMessage());
             }
             return;
         }
         MethodEntry<Subscribe> method = service.Subs.get(name);
         if(method == null) {
-            Out("No Method", name);
+            Panda("No Method", name);
             return; // fuck it
         }
         try {
@@ -110,16 +105,8 @@ public class RCP {
         }
     }
 
-    private static class DatagramStucture {
-
-        public long order;
-        public UUID key;
-        public String name;
-        public Serializable value;
-    }
-
     private static long last_packet = 0;
-    static FSTConfiguration conf = FSTConfiguration.createDefaultConfiguration();
+    public static FSTConfiguration serializer = FSTConfiguration.createDefaultConfiguration();
 
     public static void Send(UUID key, String name, Serializable o) {
         DatagramStucture envelope = new DatagramStucture();
@@ -128,7 +115,7 @@ public class RCP {
         envelope.order = last_packet++;
         envelope.value = o;
 
-        byte[] outbound = conf.asByteArray(envelope);
+        byte[] outbound = serializer.asByteArray(envelope);
         DatagramPacket data = new DatagramPacket(outbound, outbound.length);
         
         try {
@@ -168,7 +155,7 @@ public class RCP {
                 try {
                     socket.receive(tmp);
                     theOtherGuy = tmp.getSocketAddress();
-                    DatagramStucture d = (DatagramStucture) conf.asObject(tmp.getData());
+                    DatagramStucture d = (DatagramStucture) serializer.asObject(tmp.getData());
                     Call(d.key, d.name, d.value);
                 } catch (IOException ex) {
                     Logger.getLogger(RCP.class.getName()).log(Level.SEVERE, null, ex);
