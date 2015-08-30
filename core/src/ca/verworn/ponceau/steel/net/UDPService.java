@@ -1,6 +1,7 @@
 package ca.verworn.ponceau.steel.net;
 
 import static ca.verworn.ponceau.steel.util.Logger.Panda;
+import ca.verworn.ponceau.steel.util.MakeshiftInputReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -34,13 +35,20 @@ public class UDPService extends Thread {
             serverSocket.send(data);
         }
     }
+    
+    public static void addClient(SimpleEntry<InetAddress,Integer> person) {
+        synchronized(others) {
+            others.add(person);
+        }
+    }
 
 
     private boolean GREEN_LIGHT = true;
 
-    public UDPService() {
+    public UDPService() { }
+    public UDPService(String host, int port) {
         try {
-            others.add(new AbstractMap.SimpleEntry<>(InetAddress.getByName("alpha.verworn.net"), 1233));
+            others.add(new AbstractMap.SimpleEntry<>(InetAddress.getByName(host), port));
         } catch (UnknownHostException ex) { }
     }
 
@@ -57,6 +65,8 @@ public class UDPService extends Thread {
         int listenPort = 0;
         int targetPort = 0;
         String targetHost = "";
+        
+        MakeshiftInputReader threadedInput = new MakeshiftInputReader();
 
         try {
 
@@ -79,10 +89,12 @@ public class UDPService extends Thread {
             serverSocket = new DatagramSocket(listenPort, InetAddress.getLocalHost());
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             Panda("Server listening...", localAddr, listenPort);
+            threadedInput.start();
             SimpleEntry pair;
             while (GREEN_LIGHT) {
                 serverSocket.receive(receivePacket);
                 byte[] temp = receivePacket.getData();
+                Panda("Recieved Data", temp.length, "bytes");
                 RCP.theQueue.add((DatagramStucture) RCP.serializer.asObject(temp));
                 InetAddress IPAddress = receivePacket.getAddress();
                 int port = receivePacket.getPort();
@@ -98,6 +110,7 @@ public class UDPService extends Thread {
         } finally {
             serverSocket.close();
             service.shutdown();
+            Panda("shutting down");
         }
     }
 

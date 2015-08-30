@@ -18,6 +18,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+    // for desktop build. do not remove
+    packagingOptions { 
+        exclude 'META-INF/LICENSE' 
+        exclude 'META-INF/NOTICE' 
+        exclude 'META-INF/beans.xml'
+    }
 }
 
 // Called every time gradle gets executed, takes the native dependencies of the natives configuration, and extracts

@@ -8,6 +8,7 @@ import ca.verworn.ponceau.steel.handlers.Box2DHelper;
 import static ca.verworn.ponceau.steel.handlers.Box2DHelper.MPP;
 import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
 import ca.verworn.ponceau.steel.handlers.BulletContactListener;
+import ca.verworn.ponceau.steel.net.RCP;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
@@ -25,8 +26,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * This class is an example of loading a map, with a player. The player can collide into walls, shoot bullets, and those
- * bullets can collide with the player or the walls.
+ * This class is an example of loading a map, with a player. The player can 
+ * collide into walls, shoot bullets, and those bullets can collide with the 
+ * player or the walls.
  *
  * @author Evan Verworn <evan@verworn.ca>
  */
@@ -82,7 +84,8 @@ public class MapScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // TODO: Should do IO, world updates, then drawing.
-
+        RCP.handleIncoming();
+        
         // update physics
         world.step(delta, 5, 2);
 

@@ -51,6 +51,7 @@ public class RCP {
     public static ConcurrentHashMap<UUID, ServiceDictionary> services = new ConcurrentHashMap<>();
 
     public static ServiceDictionary Publish(Service s) {
+        Panda("exposed to network", s.getClass().getCanonicalName());
         ServiceDictionary tmp = new ServiceDictionary();
         Class clazz = s.getClass();
         for (Field f : clazz.getFields()) {
@@ -80,6 +81,7 @@ public class RCP {
     }
 
     public static void Call(UUID key, String name, Object o) {
+        Panda("CALL", key, name, o);
         ServiceDictionary service = services.get(key);
         if (service == null) {
             try {
@@ -99,7 +101,11 @@ public class RCP {
             return; // fuck it
         }
         try {
-            method.method.invoke(service.obj, method.method.getParameterTypes()[0].cast(o));
+            if(method.method.getParameterCount() == 0) {
+                method.method.invoke(service.obj);
+            } else {         
+                method.method.invoke(service.obj, method.method.getParameterTypes()[0].cast(o));
+            }
         } catch (Exception ex) {
             Logger.getLogger(RCP.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -109,6 +115,8 @@ public class RCP {
     public static FSTConfiguration serializer = FSTConfiguration.createDefaultConfiguration();
 
     public static void Send(UUID key, String name, Serializable o) {
+        Panda();
+        Panda("RCP", key, name, o);
         DatagramStucture envelope = new DatagramStucture();
         envelope.key = key;
         envelope.name = name;
@@ -128,8 +136,11 @@ public class RCP {
     public static ConcurrentLinkedQueue<DatagramStucture> theQueue = new ConcurrentLinkedQueue<>();
 
     public static void handleIncoming() {
-        for (DatagramStucture gram : theQueue) {
-            RCP.Call(gram.key, gram.name, gram.value);
+        synchronized(theQueue) {
+            for (DatagramStucture gram : theQueue) {
+                RCP.Call(gram.key, gram.name, gram.value);
+            }
+            theQueue.clear();
         }
     }
 

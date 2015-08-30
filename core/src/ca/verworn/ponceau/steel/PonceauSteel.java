@@ -1,8 +1,10 @@
 package ca.verworn.ponceau.steel;
 
+import ca.verworn.ponceau.steel.net.UDPService;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import ca.verworn.ponceau.steel.scenes.MapScreen;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -17,6 +19,7 @@ public class PonceauSteel extends Game {
     public ShapeRenderer renderer;
     public BitmapFont font;
     public World world;
+    public UDPService network;
     
     public PonceauSteel () {
       world = new World(new Vector2(0,0), true);
@@ -28,6 +31,8 @@ public class PonceauSteel extends Game {
         renderer = new ShapeRenderer();
         font = new BitmapFont();
         setScreen(new MapScreen(this));
+        network = new UDPService();
+        network.start();
     }
 
     @Override
