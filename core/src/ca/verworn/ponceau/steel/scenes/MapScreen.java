@@ -162,7 +162,7 @@ public class MapScreen implements Screen {
 
         @Override
         public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-            return player.touchDown(world, camera.unproject(screenX, screenY));
+            return player.touchDown(world);
         }
     };
 }

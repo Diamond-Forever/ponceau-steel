@@ -21,14 +21,15 @@ public class Bullet implements Entity {
     // Really this should live outside of Bullet, as it should be cleaned up when the application is closing.
     private static Sprite mBulletSprite;
 
-    public static void create(World world, Vector2 origin, Vector2 direction) {
+    public static void create(World world, Vector2 origin, float angle) {
         if (mBulletSprite == null) {
             mBulletSprite = new Sprite(new Texture("bullet.png"));
         }
 
+        Vector2 direction = new Vector2((float) Math.cos(angle), (float) Math.sin(angle));
         CircleShape circleShape = new CircleShape();
         circleShape.setRadius(mBulletSprite.getWidth() / 2 / PPM);
-        circleShape.setPosition(origin.cpy().add(direction.cpy().scl(0.38f)));
+        circleShape.setPosition(origin.cpy().add(direction.scl(0.38f)));
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circleShape;

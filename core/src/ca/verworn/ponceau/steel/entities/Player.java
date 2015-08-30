@@ -95,9 +95,6 @@ public class Player extends Sprite implements Entity {
         } else {
             Gdx.app.log("", "nailed it");
         }
-        //        Gdx.app.log("", String.format("%f %f -> %f %f", body.getPosition().x, body.getPosition().x,
-        // mousePosition.y,
-        //                mousePosition.y));
 
         // Force = Mass * Acceleration
         velocity.set(direction);
@@ -142,9 +139,8 @@ public class Player extends Sprite implements Entity {
         return false;
     }
 
-    public boolean touchDown(World world, Vector2 mousePosition) {
-        Vector2 origin = body.getPosition();
-        Bullet.create(world, origin, MathUtil.getNormalDirectionVector(origin, mousePosition));
+    public boolean touchDown(World world) {
+        Bullet.create(world, body.getPosition(), body.getAngle());
         return true;
     }
 
