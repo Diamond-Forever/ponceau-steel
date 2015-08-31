@@ -35,7 +35,8 @@ public class MakeshiftInputReader extends Thread {
             UDPService.addClient(pair);
             PING p = new PING();
             RCP.Publish(p);
-            RCP.Send(p.key, "ping", "null isn't serializable");
+            RCP.Send(p.key, PING.class.getCanonicalName(), null);
+            RCP.Send(p.key, "ping", null);
         } catch (IOException ex) {
             Panda("error reading connection input", ex);
         }

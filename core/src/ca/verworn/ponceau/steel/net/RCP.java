@@ -77,21 +77,24 @@ public class RCP {
             }
         }
         tmp.obj = s;
-        return services.put(tmp.Key, tmp);
+        services.put(tmp.Key, tmp);
+        return tmp;
     }
 
     public static void Call(UUID key, String name, Object o) {
         Panda("CALL", key, name, o);
         ServiceDictionary service = services.get(key);
         if (service == null) {
+            Panda(key, "of type", name, "not found in cache.");
             try {
                 Class<?> clazz = Class.forName(name);
                 Constructor<?> ctor = clazz.getConstructor(UUID.class);
-                Service object = (Service) ctor.newInstance(new Object[]{key});
+                Service object = (Service) ctor.newInstance(key);
                 service = Publish(object);
                 service.isRemote = true;
             } catch (Exception e) {
-                Panda(e.getLocalizedMessage());
+                Panda(e);
+                e.printStackTrace();
             }
             return;
         }
@@ -100,6 +103,7 @@ public class RCP {
             Panda("No Method", name);
             return; // fuck it
         }
+        Panda("Now invoking", name, "on", key, method);
         try {
             if(method.method.getParameterCount() == 0) {
                 method.method.invoke(service.obj);
@@ -142,37 +146,5 @@ public class RCP {
             }
             theQueue.clear();
         }
-    }
-
-    private static byte[] buffer;
-    private static DatagramSocket socket;
-    private static SocketAddress theOtherGuy;
-    public static Thread theThread = null;
-
-    @Deprecated
-    public static void Start() {
-        try {
-            socket = new DatagramSocket(6789);
-        } catch (Exception ex) {
-            Logger.getLogger(RCP.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if (theThread != null && theThread.isAlive()) {
-            theThread.stop();
-        }
-        theThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                DatagramPacket tmp = null;
-                try {
-                    socket.receive(tmp);
-                    theOtherGuy = tmp.getSocketAddress();
-                    DatagramStucture d = (DatagramStucture) serializer.asObject(tmp.getData());
-                    Call(d.key, d.name, d.value);
-                } catch (IOException ex) {
-                    Logger.getLogger(RCP.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        theThread.start();
     }
 }

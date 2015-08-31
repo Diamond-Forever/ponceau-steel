@@ -14,6 +14,14 @@ import java.util.UUID;
 public class PING implements Service{
     @Key public UUID key = UUID.randomUUID();
     
+    public PING() {
+        Panda("test empty constructor");
+    }
+    public PING(UUID remotekey) {
+        Panda("test full constructor");
+        key = remotekey;
+    }
+    
     @Subscribe(endpoint = "ping")
     public String ping() {
         Panda("PONG");
