@@ -7,8 +7,10 @@ import ca.verworn.ponceau.steel.graphics.PonceauCamera;
 import ca.verworn.ponceau.steel.handlers.Box2DHelper;
 import static ca.verworn.ponceau.steel.handlers.Box2DHelper.MPP;
 import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
+import static ca.verworn.ponceau.steel.util.Logger.Panda;
 import ca.verworn.ponceau.steel.handlers.BulletContactListener;
 import ca.verworn.ponceau.steel.net.RCP;
+import ca.verworn.ponceau.steel.net.UDPService;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
@@ -41,6 +43,7 @@ public class MapScreen implements Screen {
     private final PonceauSteel game;
     private final Set<Body> mDestroyedBodies = new HashSet<>();
     private Player player;
+    private float player_network_cooldown = 0;
     private World world;
 
     //BOX2D
@@ -57,9 +60,11 @@ public class MapScreen implements Screen {
         map = loader.load("maps/simplemap.tmx");
         renderer = new OrthogonalTiledMapRenderer(map);
         camera = new PonceauCamera();
-
+        
         world = new World(new Vector2(0, 0), true); // box2D
         world.setContactListener(new BulletContactListener(mDestroyedBodies));
+        game.world = world;
+        
         debug = new Box2DDebugRenderer();
         debugCam = new OrthographicCamera();
 
@@ -71,6 +76,14 @@ public class MapScreen implements Screen {
         Box2DHelper.parseMapBodies(map, world);
 
         Gdx.input.setInputProcessor(mTemporaryInputProcessor);
+        
+        RCP.Publish(player);
+        UDPService.onConnectionCallback.add(new Runnable() {
+            @Override public void run() {
+                Panda("Person Connected");
+                RCP.Send(player.Key, Player.class.getCanonicalName(), null);
+            }
+        });
     }
 
     @Override
@@ -84,7 +97,15 @@ public class MapScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // TODO: Should do IO, world updates, then drawing.
+        
+        // Networking
         RCP.handleIncoming();
+        // the below shady updating procedure *should* become obsolute with the
+        // @Publish annotation.
+        if((player_network_cooldown -= delta) <= 0) {
+            RCP.Send(player.Key, "setPosition", player.body.getPosition());
+            player_network_cooldown = 0.1f; // ten times per second
+        }
         
         // update physics
         world.step(delta, 5, 2);

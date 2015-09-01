@@ -21,12 +21,17 @@ public class PonceauSteel extends Game {
     public World world;
     public UDPService network;
     
+    // no we probably shouldn't have a singleton god instance
+    // but I wanted to be able to create another player and I need a World instance for that.
+    public static PonceauSteel instance;
+    
     public PonceauSteel () {
-      world = new World(new Vector2(0,0), true);
+        world = new World(new Vector2(0,0), true);
     }
 
     @Override
     public void create() {
+        instance = this;
         batch = new SpriteBatch();
         renderer = new ShapeRenderer();
         font = new BitmapFont();
@@ -40,5 +45,6 @@ public class PonceauSteel extends Game {
         batch.dispose();
         renderer.dispose();
         font.dispose();
+        instance = null;
     }
 }

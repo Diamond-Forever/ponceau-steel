@@ -12,6 +12,9 @@ import java.lang.reflect.Method;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -73,7 +76,7 @@ public class RCP {
             if (pub != null) {
                 tmp.Pubs.put(m.getName(), new MethodEntry<>(m, pub));
             } else if (sub != null) {
-                tmp.Subs.put(m.getName(), new MethodEntry<>(m, sub));
+                tmp.Subs.put(sub.endpoint(), new MethodEntry<>(m, sub));
             }
         }
         tmp.obj = s;
@@ -100,7 +103,12 @@ public class RCP {
         }
         MethodEntry<Subscribe> method = service.Subs.get(name);
         if(method == null) {
-            Panda("No Method", name);
+            String list = "";
+            Enumeration<String> keys = service.Subs.keys();
+            while(keys.hasMoreElements()) {
+                list += keys.nextElement() + ", ";
+            }
+            Panda("No Method", name, "of", list);
             return; // fuck it
         }
         Panda("Now invoking", name, "on", key, method);
@@ -119,7 +127,6 @@ public class RCP {
     public static FSTConfiguration serializer = FSTConfiguration.createDefaultConfiguration();
 
     public static void Send(UUID key, String name, Serializable o) {
-        Panda();
         Panda("RCP", key, name, o);
         DatagramStucture envelope = new DatagramStucture();
         envelope.key = key;

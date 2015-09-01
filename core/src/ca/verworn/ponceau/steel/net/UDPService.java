@@ -28,6 +28,8 @@ public class UDPService extends Thread {
     private static DatagramSocket serverSocket;
     private static final List<AbstractMap.SimpleEntry<InetAddress,Integer>> others = new ArrayList<>();
     
+    public static ArrayList<Runnable> onConnectionCallback = new ArrayList<>();
+    
     public static void Broadcast(DatagramPacket data) throws IOException {
         for (AbstractMap.SimpleEntry<InetAddress,Integer> addr : others) {
             data.setAddress(addr.getKey());
@@ -40,6 +42,7 @@ public class UDPService extends Thread {
         synchronized(others) {
             others.add(person);
         }
+        fireConnectionEvent();
     }
 
 
@@ -94,7 +97,7 @@ public class UDPService extends Thread {
             while (GREEN_LIGHT) {
                 serverSocket.receive(receivePacket);
                 byte[] temp = receivePacket.getData();
-                Panda("Recieved Data", temp.length, "bytes");
+                Panda("Recieved Data", receivePacket.getLength(), "bytes");
                 RCP.theQueue.add((DatagramStucture) RCP.serializer.asObject(temp));
                 InetAddress IPAddress = receivePacket.getAddress();
                 int port = receivePacket.getPort();
@@ -102,7 +105,7 @@ public class UDPService extends Thread {
                 pair = new SimpleEntry(IPAddress, port);
                 if(!others.contains(pair)){
                     Panda("new person!", pair.getValue());
-                    others.add(pair);
+                    addClient(pair);
                 }
             }
         } catch (IOException | NumberFormatException e) {
@@ -112,6 +115,13 @@ public class UDPService extends Thread {
             service.shutdown();
             Panda("shutting down");
         }
+    }
+
+    private static void fireConnectionEvent() {
+        for(Runnable r : onConnectionCallback)
+                        r.run(); // ***should be on the main thread***
+                                 // or at least in it's own thread
+                                 // probable race conditions abound!
     }
 
 }

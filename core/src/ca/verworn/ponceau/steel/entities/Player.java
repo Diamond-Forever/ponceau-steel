@@ -1,5 +1,6 @@
 package ca.verworn.ponceau.steel.entities;
 
+import ca.verworn.ponceau.steel.PonceauSteel;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
@@ -34,13 +35,26 @@ public class Player extends Sprite implements Entity, Service {
     public Vector2 direction = new Vector2(0, 0);
     private final float MAX_SPEED = 30f;
     private final float ACCELERATION = 0.9f;
-    private final Body body;
-    private final float radius;
+    public Body body;
+    private float radius;
     private Vector2 origin;
     
-    @Key public final UUID Key = UUID.randomUUID();
+    @Key public UUID Key = UUID.randomUUID();
+    // for remote player to call.
+    public Player(UUID remotekey) {
+        super(new Sprite(new Texture("player.png")));
+        radius = getWidth() / 2 / PPM;
+        Key = remotekey;
+        Player p = Player.create(null);
+        this.body = p.body;
+        this.body.setTransform(0, 0, this.body.getAngle());
+    }
     
     public static Player create(World world) {
+        // in case we're remote
+        if(world == null) {
+            world = PonceauSteel.instance.world;
+        }        
         // We define the body first because the player needs a reference to it, even though a lot of the body
         // definition stuff requires access to the players size.
         BodyDef def = new BodyDef();
@@ -75,7 +89,7 @@ public class Player extends Sprite implements Entity, Service {
         return EntityType.PLAYER;
     }
     
-    @Subscribe(endpoint="Position")
+    @Subscribe(endpoint="setPosition")
     public void receivePosition(Vector2 position) {
       body.setTransform(position, body.getAngle());
     }
