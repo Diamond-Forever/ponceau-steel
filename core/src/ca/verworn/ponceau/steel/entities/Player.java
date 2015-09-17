@@ -1,13 +1,10 @@
 package ca.verworn.ponceau.steel.entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -27,13 +24,12 @@ import static ca.verworn.ponceau.steel.handlers.Box2DHelper.PPM;
  */
 public class Player extends Sprite implements Entity {
 
-    public Vector2 velocity = new Vector2(0, 0);
-    public Vector2 direction = new Vector2(0, 0);
-    private final float MAX_SPEED = 30f;
-    private final float ACCELERATION = 0.9f;
-    private final Body body;
-    private final float radius;
-    private Vector2 origin;
+    private static final float ACCELERATION = 0.9f;
+
+    private final Vector2 mVelocity = new Vector2(0, 0);
+    private final Vector2 mDirection = new Vector2(0, 0);
+    private final Body mBody;
+    private final float mRadius;
 
     public static Player create(World world) {
         // We define the body first because the player needs a reference to it, even though a lot of the body
@@ -45,7 +41,7 @@ public class Player extends Sprite implements Entity {
         Player player = new Player(new Sprite(new Texture("player.png")), body);
 
         CircleShape shape = new CircleShape();
-        shape.setRadius(player.radius);
+        shape.setRadius(player.mRadius);
 
         FixtureDef fdef = new FixtureDef();
         fdef.shape = shape;
@@ -59,10 +55,10 @@ public class Player extends Sprite implements Entity {
         return player;
     }
 
-    public Player(Sprite sprite, Body body) {
+    private Player(Sprite sprite, Body body) {
         super(sprite);
-        radius = getWidth() / 2 / PPM;
-        this.body = body;
+        mRadius = getWidth() / 2 / PPM;
+        mBody = body;
     }
 
     @Override
@@ -70,13 +66,8 @@ public class Player extends Sprite implements Entity {
         return EntityType.PLAYER;
     }
 
-    @Override
-    public void draw(Batch batch) {
-        super.draw(batch);
-    }
-
     public void draw(ShapeRenderer renderer, PonceauCamera camera) {
-        Vector3 n = camera.project(new Vector3(getX() + radius * PPM, getY() + radius * PPM, 0f));
+        Vector3 n = camera.project(new Vector3(getX() + mRadius * PPM, getY() + mRadius * PPM, 0f));
         renderer.begin(ShapeType.Filled);
         renderer.setColor(0.9f, 0.1f, 0.1f, 0.0f);
         renderer.circle(n.x, n.y, 10f);
@@ -85,37 +76,38 @@ public class Player extends Sprite implements Entity {
 
     public void update(Vector2 mousePosition) {
         // Goal: Point the character towards the mouse.
-        float crossProduct = body.getPosition().cpy()
-                .add(MathUtils.cos(body.getAngle()), MathUtils.sin(body.getAngle()))
-                .crs(mousePosition);
-        if (crossProduct > 0) {
-            body.setAngularVelocity(1.5f);
-        } else if (crossProduct < 0) {
-            body.setAngularVelocity(-1.5f);
-        } else {
-            Gdx.app.log("", "nailed it");
+
+        switch (MathUtil.rotationDirection(mBody.getAngle(), mBody.getPosition(), mousePosition)) {
+            case CLOCKWISE:
+                mBody.setAngularVelocity(3.5f);
+                break;
+            case COUNTER_CLOCKWISE:
+                mBody.setAngularVelocity(-3.5f);
+                break;
+            default:
+                mBody.setAngularVelocity(0.0f);
         }
 
         // Force = Mass * Acceleration
-        velocity.set(direction);
-        body.applyLinearImpulse(velocity.scl(body.getMass() * ACCELERATION), body.getWorldCenter(), true);
+        mVelocity.set(mDirection);
+        mBody.applyLinearImpulse(mVelocity.scl(mBody.getMass() * ACCELERATION), mBody.getWorldCenter(), true);
         // update sprite texture to physics sim
-        setPosition((body.getPosition().x - radius) * PPM, (body.getPosition().y - radius) * PPM);
+        setPosition((mBody.getPosition().x - mRadius) * PPM, (mBody.getPosition().y - mRadius) * PPM);
     }
 
     public boolean keyUp(int keycode) {
         switch (keycode) {
             case Keys.W:
-                direction.add(0f, -1f);
+                mDirection.add(0f, -1f);
                 return true;
             case Keys.A:
-                direction.add(1f, 0f);
+                mDirection.add(1f, 0f);
                 return true;
             case Keys.S:
-                direction.add(0f, 1f);
+                mDirection.add(0f, 1f);
                 return true;
             case Keys.D:
-                direction.add(-1f, 0f);
+                mDirection.add(-1f, 0f);
                 return true;
         }
         return false;
@@ -124,33 +116,23 @@ public class Player extends Sprite implements Entity {
     public boolean keyDown(int keycode) {
         switch (keycode) {
             case Keys.W:
-                direction.add(0f, 1f);
+                mDirection.add(0f, 1f);
                 return true;
             case Keys.A:
-                direction.add(-1f, 0f);
+                mDirection.add(-1f, 0f);
                 return true;
             case Keys.S:
-                direction.add(0f, -1f);
+                mDirection.add(0f, -1f);
                 return true;
             case Keys.D:
-                direction.add(1f, 0f);
+                mDirection.add(1f, 0f);
                 return true;
         }
         return false;
     }
 
     public boolean touchDown(World world) {
-        Bullet.create(world, body.getPosition(), body.getAngle());
+        Bullet.create(world, mBody.getPosition(), mBody.getAngle());
         return true;
-    }
-
-    private double norm(double v) {
-        if (v < 0) {
-            return v + MathUtils.PI2;
-        } else if (v > MathUtils.PI2) {
-            return v - MathUtils.PI2;
-        } else {
-            return v;
-        }
     }
 }
